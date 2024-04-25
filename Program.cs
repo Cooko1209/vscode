@@ -79,13 +79,17 @@ class Program
                     Console.WriteLine("重啟OpenSSH SSH Server");
                     break;
                 case 4:
+                    Addkey();// 执行添加公钥至authorized_keys文件
+                    Console.WriteLine("我要申請ssh_key");
+                    break;
+                case 5:
                     AddPublicKeyToAuthorizedKeys();// 执行添加公钥至authorized_keys文件
                     Console.WriteLine("將公鑰新增至authorized_keys");
                     break;
-                case 5:
+                case 6:
                     backToMainMenu = true;
                     break;
-                case 6:
+                case 7:
                     Environment.Exit(0);
                     break;
                 default:
@@ -95,15 +99,24 @@ class Program
         }
     }
 
+
     static void DisplaySubMenu1()
     {
         Console.WriteLine("ssh設定選單");
         Console.WriteLine("1. 新增伺服器主機名稱及IP");
         Console.WriteLine("2. ssh設定檔(sshd_config)修訂");
         Console.WriteLine("3. 重啟OpenSSH SSH Server");
-        Console.WriteLine("4. 將公鑰新增至authorized_keys");
-        Console.WriteLine("5. 返回上層選單");
-        Console.WriteLine("6. 退出程序");
+        Console.WriteLine("4. 給我一個ssh_key");
+        Console.WriteLine("5. 將公鑰新增至authorized_keys");
+        Console.WriteLine("6. 返回上層選單");
+        Console.WriteLine("7. 退出程序");
+    }
+
+    static void Addkey()
+    {
+        Console.WriteLine("ssh-keygen -t rsa");
+        Console.WriteLine("已完成key申請");
+    
     }
 
     static int GetSubMenuChoice()
@@ -269,7 +282,7 @@ class Program
                     break;
                 case 4:
                     CommitAndPush();// 执行提交并同步到远程仓库
-                    Console.WriteLine("提交(commit)並執行同步(push)");
+                    Console.WriteLine("Github提交(commit)並執行同步(push)");
                     break;
                 case 5:
                     CloneGitRepository();// 执行下载Git数据至本地
@@ -293,8 +306,8 @@ class Program
         Console.WriteLine("Github選單");
         Console.WriteLine("1. 首次上傳Github");
         Console.WriteLine("2. 本機上傳已連結Github資料夾");
-        Console.WriteLine("3. 待新增功能");
-        Console.WriteLine("4. 待新增功能");
+        Console.WriteLine("3. 與git倉庫建立連接(remote)");
+        Console.WriteLine("4. Github提交(commit)並執行同步(push)");
         Console.WriteLine("5. 下載git資料(clone)");
         Console.WriteLine("6. 返回上層選單");
         Console.WriteLine("7. 退出程序");
@@ -352,7 +365,7 @@ class Program
         sw.WriteLine($"git branch -M {githubmain}");
         sw.WriteLine($"git remote add {githubid} https://github.com/{githubid}/{githubURL}.git");
         sw.WriteLine($"git push -u {githubid} {githubmain}");
-        sw.WriteLine("請繼續選擇選單執行項目");
+        sw.WriteLine("請繼續選擇選單執行項目: ");
         sw.WriteLine("exit"); // 退出視窗a
         sw.Close(); // 關閉輸入流
    
@@ -399,7 +412,7 @@ class Program
         StreamWriter sw = process.StandardInput;
         // 這裡可以替換成你想要執行的指令
         sw.WriteLine("git add *");
-        sw.WriteLine("git commit -m \"提交訊息\"");
+        sw.WriteLine("git commit -m \"我是提交訊息\"");
         sw.WriteLine("git push");
         sw.WriteLine("請繼續選擇選單執行項目");
         sw.WriteLine("exit"); // 退出視窗a
@@ -431,10 +444,70 @@ class Program
 
     static void CommitAndPush()
     {
+        
+
+
+       
+
+        Console.WriteLine("請輸入GitHub使用者名稱：");
+        string githubid = Console.ReadLine();
+
+        Console.WriteLine("請輸入GitHub倉庫名稱：");
+        string githubURL = Console.ReadLine();
+
+        Console.WriteLine("請輸入GitHub倉庫分支名稱：");
+        string githubmain = Console.ReadLine();
+
+        Console.Write("請輸入要提交(commit)的資料夾路徑: ");
+        string folderPath = Console.ReadLine();
+
         Console.Write("請輸入要提交(commit)的訊息: ");
         string commitMessage = Console.ReadLine();
 
-        ExecuteGitCommand($"git commit -m \"{commitMessage}\"");
+        if (!Directory.Exists(folderPath))
+        {
+            Console.WriteLine("資料夾不存在！");
+            return;
+        }
+
+
+        ProcessStartInfo psi = new ProcessStartInfo
+        {
+            FileName = "cmd",
+            WorkingDirectory = folderPath,
+            UseShellExecute = false, // 不使用 Shell 執行
+            RedirectStandardInput = true, // 重定向標準輸入
+            RedirectStandardOutput = true, // 重定向標準輸出
+            CreateNoWindow = false // 不創建新視窗
+        };
+
+        Process process = new Process
+        {
+            StartInfo = psi,
+            EnableRaisingEvents = true
+        };
+
+        process.OutputDataReceived += (sender, e) =>
+        {
+            // 監聽視窗a的輸出
+            Console.WriteLine("/r/n" + "系統後台輸出： " + e.Data);
+        };
+
+        process.Start();
+        process.BeginOutputReadLine(); // 開始異步讀取輸出
+
+        // 向視窗a發送指令
+        StreamWriter sw = process.StandardInput;
+        sw.WriteLine("git init"); // 這裡可以替換成你想要執行的指令
+        sw.WriteLine("git add *");
+    
+        sw.WriteLine($"git commit -M  {commitMessage}");
+        sw.WriteLine($"git remote add {githubid} https://github.com/{githubid}/{githubURL}.git");
+        sw.WriteLine($"git push -u {githubid} {githubmain}");
+        sw.WriteLine("請繼續選擇選單執行項目: ");
+        sw.WriteLine("exit"); // 退出視窗a
+        sw.Close(); // 關閉輸入流
+
 
         Console.Write("是否執行同步操作 (push)? (Y/N): ");
         string input = Console.ReadLine();
