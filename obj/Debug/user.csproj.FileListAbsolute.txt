@@ -1,0 +1,7 @@
+D:\測試用成果\c#\cs2024a\0423\user\user\bin\Debug\user.exe.config
+D:\測試用成果\c#\cs2024a\0423\user\user\bin\Debug\user.exe
+D:\測試用成果\c#\cs2024a\0423\user\user\bin\Debug\user.pdb
+D:\測試用成果\c#\cs2024a\0423\user\user\obj\Debug\user.csproj.AssemblyReference.cache
+D:\測試用成果\c#\cs2024a\0423\user\user\obj\Debug\user.csproj.CoreCompileInputs.cache
+D:\測試用成果\c#\cs2024a\0423\user\user\obj\Debug\user.exe
+D:\測試用成果\c#\cs2024a\0423\user\user\obj\Debug\user.pdb
